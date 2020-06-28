@@ -54,11 +54,11 @@ class ChoperSpider(scrapy.Spider):
         price = CleanPrice(response.xpath('//*[@id="span_product_price_text"]/text()').extract()[0])
         thumbnail = response.css('#pro_detail > div.detailArea > div.xans-element-.xans-product.xans-product-image.imgArea > div.keyImg > div > a > img::attr(src)').extract()[0]
         images = response.css('#prdDetail > div.cont > p > img::attr(src)').extract()
-        if(itemUrl.find('cate_no/252')):
+        if(itemUrl.find('cate_no=252') != -1):
             clothesType = Type[0]
-        if(itemUrl.find('cate_no/244')):
+        if(itemUrl.find('cate_no=244') != -1):
             clothesType = Type[1]
-        if(itemUrl.find('cate_no/30')):
+        if(itemUrl.find('cate_no=30') != -1):
             clothesType = Type[2]
         domain = self.domain
         PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
@@ -97,11 +97,11 @@ class BenitoSpider(scrapy.Spider):
         thumbnail = response.xpath('//*[@id="contents"]/div[1]/div[1]/div[1]/div[1]/div/a/img/@src').extract()[0]
         price = CleanPrice(response.xpath('//*[@id="span_product_price_text"]/text()').extract()[0])
         images = response.xpath('/html/body/div[2]/div[2]/div/div[3]/div[1]/div/p/img/@src').extract()
-        if(itemUrl.find('/category/33')):
+        if(itemUrl.find('/category/33') != -1):
             clothesType = Type[0]
-        if(itemUrl.find('/category/36')):
+        if(itemUrl.find('/category/36') != -1):
             clothesType = Type[1]
-        if(itemUrl.find('/category/41')):
+        if(itemUrl.find('/category/41') != -1):
             clothesType = Type[2]
         domain = self.domain
         PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
