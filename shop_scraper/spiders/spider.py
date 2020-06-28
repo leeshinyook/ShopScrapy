@@ -1,35 +1,84 @@
 import scrapy
 import re
 
-class SP2Spider(scrapy.Spider):
-    name = 'git'
-    allowed_domains = ['github.com']
+Type = ['skirt', 'pants', 'top']
+
+def CleanPrice(price):
+    korean = re.compile('[\u3131-\u3163\uac00-\ud7a3]+') 
+    parsePrice = re.sub(korean, '', price) 
+    parsePrice = re.sub('[-=+,#/\?￦:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', parsePrice)
+    return parsePrice
+
+def PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain):
+    print("===========================================================================================================")
+    print("쇼핑몰 이름 : " + shopName)
+    print("아이템 URL : " + itemUrl)
+    print("타입 : " + clothesType)
+    print("상품명 : "+ name)
+    print("썸네일 : " + thumbnail)
+    print("가격 : " + price)
+    print('상품 이미지URL : ', end='')
+    for image in images:
+        url = domain + image
+        print(url)
+    print()
+# def AssignClothesType(topUrl, pantsUrl, )
+class ChoperSpider(scrapy.Spider):
+    name = 'choper'
+    allowed_domains = ['choper.kr']
+    domain = 'http://www.choper.kr'
     start_urls = [
-        "https://github.com/leeshinyook"
+        "http://www.choper.kr/product/list.html?cate_no=30" #Top
+        "http://www.choper.kr/product/list.html?cate_no=244", #Pants
+        "http://www.choper.kr/product/list.html?cate_no=252" #Skirt
     ]
-
+    # 카테코리별 마지막 페이지를 파싱한다.
     def parse(self, response):
-        print(response)
+        # 카테고리별 마지막 페이지
+        lastPage = response.css('#contents > div.xans-element-.xans-product.xans-product-normalpaging.ec-base-paginate > p:nth-child(5) > a::attr(href)').extract()[0]
+        lastPage = lastPage[lastPage.find('page=') + 5:]
+        print(lastPage)
+        # 상품별 ItemPath
+        for page in range(1, int(lastPage) + 1):
+            url = response.url + "&page=" + str(page)
+            yield scrapy.Request(url,self.parse_item)
+    def parse_item(self, response):
+        itemsPath = response.css('#contents > div.xans-element-.xans-product.xans-product-normalpackage > div > ul > li > div > p.name > a::attr(href)').extract()
+        for itemPath in itemsPath:
+            url = self.domain + itemPath
+            yield scrapy.Request(url, self.parse_item_info)
+    def parse_item_info(self, response):
+        shopName = self.name
+        itemUrl = response.url
+        name = response.xpath('//*[@id="decolay"]/div[1]/h2/text()').extract()[0]
+        price = CleanPrice(response.xpath('//*[@id="span_product_price_text"]/text()').extract()[0])
+        thumbnail = response.css('#pro_detail > div.detailArea > div.xans-element-.xans-product.xans-product-image.imgArea > div.keyImg > div > a > img::attr(src)').extract()[0]
+        images = response.css('#prdDetail > div.cont > p > img::attr(src)').extract()
+        if(itemUrl.find('cate_no/252')):
+            clothesType = Type[0]
+        if(itemUrl.find('cate_no/244')):
+            clothesType = Type[1]
+        if(itemUrl.find('cate_no/30')):
+            clothesType = Type[2]
+        domain = self.domain
+        PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
 
 
-class SPSpider(scrapy.Spider):
+class BenitoSpider(scrapy.Spider):
     name = "benito"
     allowed_domains = ["benito.co.kr"]
+    domain = 'https://www.benito.co.kr'
     start_urls = [
         "https://www.benito.co.kr/product/list.html?cate_no=33", #Skirt
         "https://www.benito.co.kr/product/list.html?cate_no=36", #Pants
         "https://www.benito.co.kr/product/list.html?cate_no=41", #Top
     ]
-
     # 카테고리별 마지막 페이지를 파싱한다.
     def parse(self, response):
         # 카테고리별 마지막 페이지
         lastPage = response.xpath(
             '//*[@id="contents"]/div[5]/a/@href').extract()[-1]
         lastPage = lastPage[lastPage.find('page=') + 5:]
-        # 상품별 ItemPath
-        itemPath = response.xpath(
-            '/html/body/div[2]/div[2]/div/div[4]/div[2]/ul/li/div/a/@href').extract()
         for page in range(1, int(lastPage) + 1):
             url = response.url + "&page=" + str(page)
             yield scrapy.Request(url,self.parse_item)
@@ -38,33 +87,21 @@ class SPSpider(scrapy.Spider):
         itemsPath = response.xpath(
             '/html/body/div[2]/div[2]/div/div[4]/div[2]/ul/li/div/a/@href').extract()
         for itemPath in itemsPath:
-            url = "https://www.benito.co.kr" + itemPath
-            # print(url)
+            url = self.domain + itemPath
             yield scrapy.Request(url, self.parse_item_info)
-        # yield scrapy.Request('https://www.benito.co.kr/product/랄프-스커트-2color/13252/category/33/display/1/', self.parse_item_info)
     # 페이지에 들어가서 상세정보, 이미지 파싱한다.
     def parse_item_info(self, response):
-        print("===========================================================================================================s")
+        shopName = self.name
         itemUrl = response.url
         name = response.xpath('//*[@id="contents"]/div[1]/div[1]/div[2]/div[1]/h2/text()[1]').extract()[0]
         thumbnail = response.xpath('//*[@id="contents"]/div[1]/div[1]/div[1]/div[1]/div/a/img/@src').extract()[0]
-        price = response.xpath('//*[@id="span_product_price_text"]/text()').extract()[0]
-        korean = re.compile('[\u3131-\u3163\uac00-\ud7a3]+')
-        parsePrice = re.sub(korean, '', price)
+        price = CleanPrice(response.xpath('//*[@id="span_product_price_text"]/text()').extract()[0])
         images = response.xpath('/html/body/div[2]/div[2]/div/div[3]/div[1]/div/p/img/@src').extract()
         if(itemUrl.find('/category/33')):
-            clothesType = 'skirt'
+            clothesType = Type[0]
         if(itemUrl.find('/category/36')):
-            clothesType = 'pants'
+            clothesType = Type[1]
         if(itemUrl.find('/category/41')):
-            clothesType = 'top'
-        print("아이템 URL : " + itemUrl)
-        print("타입 : " + clothesType)
-        print("상품명 : "+ name)
-        print("썸네일 : " + thumbnail)
-        print("가격 : " + parsePrice)
-        print('상품 이미지URL : ', end='')
-        for image in images:
-            url = "https://www.benito.co.kr" + image
-            print(url)
-        print()
+            clothesType = Type[2]
+        domain = self.domain
+        PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
