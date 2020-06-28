@@ -67,3 +67,4 @@ class SPSpider(scrapy.Spider):
         for image in images:
             url = "https://www.benito.co.kr" + image
             print(url)
+        print()
