@@ -28,10 +28,11 @@ class ChoperSpider(scrapy.Spider):
     allowed_domains = ['choper.kr']
     domain = 'http://www.choper.kr'
     start_urls = [
-        # "http://www.choper.kr/product/list.html?cate_no=30" #Top
+        "http://www.choper.kr/product/list.html?cate_no=30", #Top
         "http://www.choper.kr/product/list.html?cate_no=244", #Pants
-        # "http://www.choper.kr/product/list.html?cate_no=252" #Skirt
+        "http://www.choper.kr/product/list.html?cate_no=252" #Skirt
     ]
+
     # 카테코리별 마지막 페이지를 파싱한다.
     def parse(self, response):
         # 카테고리별 마지막 페이지
