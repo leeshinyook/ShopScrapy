@@ -1,5 +1,10 @@
 import scrapy
 import re
+import pytesseract
+import io
+import requests
+from PIL import Image
+
 
 Type = ['skirt', 'pants', 'top']
 
@@ -38,7 +43,6 @@ class ChoperSpider(scrapy.Spider):
         # 카테고리별 마지막 페이지
         lastPage = response.css('#contents > div.xans-element-.xans-product.xans-product-normalpaging.ec-base-paginate > p:nth-child(5) > a::attr(href)').extract()[0]
         lastPage = lastPage[lastPage.find('page=') + 5:]
-        print(lastPage)
         # 상품별 ItemPath
         for page in range(1, int(lastPage) + 1):
             url = response.url + "&page=" + str(page)
@@ -64,6 +68,22 @@ class ChoperSpider(scrapy.Spider):
         domain = self.domain
         PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
 
+
+class OCRSpider(scrapy.Spider):
+    name = "ocrtest"
+    allowed_domains = ["choper.kr"]
+    domain = 'http://www.choper.kr'
+    start_urls = [
+        "http://www.choper.kr/product/detail.html?product_no=8968&cate_no=30&display_group=1#"
+    ]
+    def parse(self, response):
+        #prdDetail > div.cont > p:nth-child(31) > img
+        size = response.xpath('//*[@id="prdDetail"]/div[1]/p/img/@src').extract()[-1]
+        sizeUrl = self.domain + size
+        print(sizeUrl)
+        res = requests.get(sizeUrl)
+        img = Image.open(io.BytesIO(res.contents))
+        print(pytesseract.image_to_string(img))
 
 class BenitoSpider(scrapy.Spider):
     name = "benito"
@@ -107,3 +127,19 @@ class BenitoSpider(scrapy.Spider):
         # domain = self.domain
         domain = ''
         PrintClothes(shopName, itemUrl, clothesType, name, thumbnail, price, images, domain)
+
+class SizeSpider(scrapy.Spider):
+    name = "benitosize"
+    allowed_domains = ["benito.co.kr"]
+    domain = 'https://www.benito.co.kr'
+    start_urls = [
+        "https://www.benito.co.kr/product/당일발송러빈-오프-니트-3color/13585/category/41/display/1/", #Top
+    ]
+    def parse(self, response):
+        # size = response.xpath('//*[@id="contents"]/div[1]/div[1]/div[2]/div[1]/h2')
+        sizeUrl = response.css('iframe::attr(src)').extract()[0]
+        yield scrapy.Request(sizeUrl, self.parse_item_size)
+
+    def parse_item_size(self, response):
+        
+
