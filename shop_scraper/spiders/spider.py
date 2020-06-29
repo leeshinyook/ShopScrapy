@@ -6,6 +6,8 @@ import requests
 from PIL import Image
 
 
+
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'}
 Type = ['skirt', 'pants', 'top']
 
 def CleanPrice(price):
@@ -80,10 +82,9 @@ class OCRSpider(scrapy.Spider):
         #prdDetail > div.cont > p:nth-child(31) > img
         size = response.xpath('//*[@id="prdDetail"]/div[1]/p/img/@src').extract()[-1]
         sizeUrl = self.domain + size
-        print(sizeUrl)
-        res = requests.get(sizeUrl)
-        img = Image.open(io.BytesIO(res.contents))
-        print(pytesseract.image_to_string(img))
+        res = requests.get(sizeUrl, headers = headers)
+        img = Image.open(io.BytesIO(res.content))
+        print(pytesseract.image_to_string(img, lang='kor'))
 
 class BenitoSpider(scrapy.Spider):
     name = "benito"
@@ -140,6 +141,5 @@ class SizeSpider(scrapy.Spider):
         sizeUrl = response.css('iframe::attr(src)').extract()[0]
         yield scrapy.Request(sizeUrl, self.parse_item_size)
 
-    def parse_item_size(self, response):
-        
+
 
