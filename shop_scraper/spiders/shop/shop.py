@@ -15,6 +15,7 @@ aftermonday = {
             "name": """//*[@id="form1"]/div/p[1]/span/text()""",
             "price": """//*[@id="span_product_price_text"]/text()""",
             "size_image": "",
+            "image_url": """""",
             "size_iframe_url": """/html/body/div[4]/div/div[4]/div[1]/div[3]/iframe/@src""",
             "size_text": "",
             "product_id": ""
@@ -37,6 +38,7 @@ ggsing = {
             "name": """/html/body/div[3]/div[2]/div[2]/div[2]/div[2]/h3/text()""",
             "price": """//*[@id="span_product_price_text"]/text()""",
             "size_image": "",
+            "image_url": """//*[@id="product_detail"]/img[7]/@ec-data-src""",
             "size_iframe_url": """/html/body/div[3]/div[2]/div[2]/div[7]/div[2]/div/div[2]/img/@src""",
             "size_text": "",
             "product_id": ""
@@ -60,6 +62,7 @@ blackup = {
             "name": """//*[@id="bu_contents"]/div[1]/div[1]/div[2]/div[1]/h3/text()""",
             "price": """//*[@id="span_product_price_text"]/text()""",
             "size_image": "",
+            "image_url": """//*[@id="prdDetail"]/div[2]/img[3]/@ec-data-src""",
             "size_iframe_url": """//*[@id="prdDetail"]/div/iframe/@src""",
             "size_text": "",
             "product_id": ""
@@ -67,6 +70,6 @@ blackup = {
 }
 
 shop_list = [
-    ggsing,
-    blackup
+    blackup,
+    ggsing
 ]

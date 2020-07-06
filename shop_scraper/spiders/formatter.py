@@ -30,6 +30,6 @@ def clean_url(url, domain):
     url.strip()
     if url[0] == '/' and url[1] == '/':
         url = 'http:' + url
-    else:
+    if url.find('http') == -1:
         url = domain + url
     return url
