@@ -11,7 +11,7 @@ def clean_price(price):
     return parse_price.strip()
 
 
-def print_clothes(shop_name, domain, item_url, name, thumbnail, price, size_image, size_text):
+def print_clothes(shop_name, domain, item_url, name, thumbnail, price, size_image, size_text, image_url, image_pixel_location):
     print("===========================================================================================================")
     print("쇼핑몰 이름 : " + shop_name)
     print("쇼핑몰 도메인 : " + domain)
@@ -21,4 +21,15 @@ def print_clothes(shop_name, domain, item_url, name, thumbnail, price, size_imag
     print("가격 : " + price)
     print("사이즈 이미지 : " + size_image)
     print("사이즈 텍스트 : " + str(size_text))
+    print("이미지 URL : " + image_url )
+    print("이미지 Pixel(lx, ly, rx, ry) : ", image_pixel_location)
     print()
+
+
+def clean_url(url, domain):
+    url.strip()
+    if url[0] == '/' and url[1] == '/':
+        url = 'http:' + url
+    else:
+        url = domain + url
+    return url
