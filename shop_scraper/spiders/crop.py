@@ -1,9 +1,12 @@
+import ssl
 from urllib.request import urlopen
 from PIL import Image
 
+context = ssl._create_unverified_context()
+
 
 def find_images_location_from_url(url):
-    img = Image.open(urlopen(url))
+    img = Image.open(urlopen(url, context=context))
     width, height = img.size  # x, y
     pix = img.load()
     vertical = find_vertical_border(width, height, pix)
@@ -62,4 +65,5 @@ def find_vertical_border(width, height, pix):
         vertical.append(height - 1)
     return vertical
 
-print(find_images_location_from_url('http://black-up.kr/web/upload/200703_hj_nr9_sk_01.jpg'))
+
+print(find_images_location_from_url('https://www.ggsing.com/yeook/itempage/zerojean_nonspantantanwashing2.jpg'))
