@@ -10,6 +10,11 @@ def clean_price(price):
     parse_price = re.sub(special_char, '', parse_price)
     return parse_price.strip()
 
+def clean_product_name(name):
+    parse_name = re.sub(r'\([^)]*\)', '', name)
+    parse_name = re.sub(r'\[[^)]*\]', '', parse_name)
+    parse_name = re.sub(r'\<[^)]*\>', '', parse_name)
+    return parse_name.strip()
 
 def print_clothes(shop_name, domain, item_url, name, thumbnail, price, size_image, size_text, image_url, image_pixel_location):
     print("===========================================================================================================")

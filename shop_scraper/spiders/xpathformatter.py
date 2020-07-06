@@ -34,7 +34,7 @@ def shop_xpath_crawler(passed_name, passed_allowed_domains, passed_domain, passe
 
             shop_name = self.name
             item_url = response.url
-            name = response.xpath(self.xpath_args['name']).extract()[0]
+            name = clean_product_name(response.xpath(self.xpath_args['name']).extract()[0])
             thumbnail = response.xpath(self.xpath_args['thumbnail']).extract()[0]
             price = clean_price(response.xpath(self.xpath_args['price']).extract()[0])
             domain = self.domain
