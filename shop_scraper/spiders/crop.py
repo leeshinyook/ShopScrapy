@@ -13,8 +13,9 @@ def find_images_location_from_url(url):
     horizontal = find_horizontal_border(width, height, pix)
     points = []
     for v in range(0, len(vertical), 2):
-        location = (horizontal[0], vertical[v], horizontal[1], vertical[v + 1])
-        points.append(location)
+        if 1500 > vertical[v + 1] - vertical[v] > 300:
+            location = (horizontal[0], vertical[v], horizontal[1], vertical[v + 1])
+            points.append(location)
     return points
 
 
@@ -66,4 +67,4 @@ def find_vertical_border(width, height, pix):
     return vertical
 
 
-print(find_images_location_from_url('https://www.ggsing.com/yeook/itempage/zerojean_nonspantantanwashing2.jpg'))
+print(find_images_location_from_url('https://www.ggsing.com/yeook/itempage/corduroybasicpants_new7.jpg'))
